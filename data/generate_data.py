@@ -44,7 +44,7 @@ def generate_fmcg_dataset(n_rows=10000):
     records = []
 
     for i in range(1, n_rows + 1):
-        order_date = start_date + timedelta(days=random.randint(0, 365))
+        order_date = start_date + timedelta(days=random.randint(0, 364))
         category = random.choice(list(categories.keys()))
         product = random.choice(categories[category])
         channel = random.choices(channels, weights=[0.45, 0.30, 0.15, 0.10])[0]
