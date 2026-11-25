@@ -1,5 +1,8 @@
 # 🛒 FMCG Sales Intelligence: Star-Schema Warehouse & Dashboard
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fmcg-sales-intelligence.streamlit.app/)  
+**Live demo:** https://fmcg-sales-intelligence.streamlit.app/
+
 An end-to-end analytics project for an omnichannel retail business: raw transaction logs → **ETL with data-quality checks** → **star-schema data model** → **analytical SQL layer** → interactive **Streamlit** dashboard.
 
 > The dataset is **synthetic** (10,000 seeded transactions for 2025), generated so the project is fully reproducible.
