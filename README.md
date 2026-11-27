@@ -69,8 +69,10 @@ The ETL step stops with a clear error before loading if the raw data breaks a bu
 - **DAX:** 14 measures covering KPIs, promotional lift, time intelligence and ranking
 - **Report:** Executive Overview, Channel Performance, Promotion and Growth, Data Quality
 
+![Executive Overview page of the Power BI report](docs/powerbi/1-executive-overview.png)
+
 Open `FMCG_Sales_Intelligence.pbip` in Power BI Desktop and click **Refresh**. See the
-[Power BI guide](FMCG_PowerBI/README.md) for setup, expected figures and verification status.
+[Power BI guide](FMCG_PowerBI/README.md) for setup, expected figures and all report pages.
 
 ## 🚀 Quickstart
 

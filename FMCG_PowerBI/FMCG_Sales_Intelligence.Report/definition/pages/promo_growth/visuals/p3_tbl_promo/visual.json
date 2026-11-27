@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "p3_tbl_promo",
   "position": {
-    "x": 640,
+    "x": 450,
     "y": 20,
     "z": 1000,
     "height": 330,
-    "width": 620,
+    "width": 810,
     "tabOrder": 1000
   },
   "visual": {
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "dim_product.Category",
-              "nativeQueryRef": "Category",
-              "active": true
+              "nativeQueryRef": "Category"
             },
             {
               "field": {
