@@ -3,9 +3,11 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fmcg-sales-intelligence.streamlit.app/)  
 **Live demo:** https://fmcg-sales-intelligence.streamlit.app/
 
-An end-to-end analytics project for an omnichannel retail business: raw transaction logs → **ETL with data-quality checks** → **star-schema data model** → **analytical SQL layer** → interactive **Streamlit** dashboard.
+An end-to-end analytics project for an omnichannel retail business: raw transaction logs → **ETL with data-quality checks** → **star-schema data model** → **analytical SQL layer** → interactive **Streamlit** dashboard and **Power BI** report.
 
 > The dataset is **synthetic** (10,000 seeded transactions for 2025), generated so the project is fully reproducible.
+
+![Streamlit dashboard with KPI cards, monthly revenue trend, category revenue and promotional uplift table](docs/dashboard.png)
 
 ## 🏗️ Architecture
 
@@ -19,7 +21,8 @@ src/etl_pipeline.py        data-quality checks → dimension & fact tables
 data/processed/            star schema (fact_sales + 3 dimensions)
         │
         ├──► sql/analytics_queries.sql   ◄── src/run_sql.py (SQLite)
-        └──► src/app.py                  Streamlit dashboard
+        ├──► src/app.py                  Streamlit dashboard
+        └──► FMCG_PowerBI/               Power BI report (PBIP)
 ```
 
 ## 🧱 Data Model
@@ -54,8 +57,20 @@ The ETL step stops with a clear error before loading if the raw data breaks a bu
 ```
 === 3. Promotional Lift by Product Category ===
  Category  avg_units_promo  avg_units_base  promo_lift_pct
-   Snacks            13.53            6.57          106.06
+   Snacks            13.53            6.57          105.93
 ```
+
+## 📈 Power BI Version
+
+[`FMCG_PowerBI/`](FMCG_PowerBI/) rebuilds the analysis as a Power BI Project (`.pbip`) on the same star schema:
+
+- **Power Query (M):** parameterised CSV loading and a data-quality table
+- **Data model:** three one-to-many relationships and a marked date table
+- **DAX:** 14 measures covering KPIs, promotional lift, time intelligence and ranking
+- **Report:** Executive Overview, Channel Performance, Promotion and Growth, Data Quality
+
+Open `FMCG_Sales_Intelligence.pbip` in Power BI Desktop and click **Refresh**. See the
+[Power BI guide](FMCG_PowerBI/README.md) for setup, expected figures and verification status.
 
 ## 🚀 Quickstart
 
@@ -77,6 +92,28 @@ streamlit run src/app.py
 
 Run all commands from the repository root. The processed star-schema tables are committed, so steps 2 and 3 work right after cloning.
 
+Or run the dashboard with Docker, then open http://localhost:8501:
+
+```bash
+docker build -t fmcg-dashboard .
+docker run --rm -p 8501:8501 fmcg-dashboard
+```
+
+## 🧪 Tests
+
+```bash
+pip install pytest
+python -m pytest tests/
+```
+
+The tests cover the dashboard, the data-quality checks, reproducibility of the committed star schema, the
+figures quoted for the SQL queries, and the consistency of the Power BI files. GitHub Actions runs them on
+pushes and pull requests to `main`.
+
 ## 🛠️ Tech Stack
 
-Python · SQL (SQLite) · Pandas · Streamlit · Plotly · Faker
+Python · SQL (SQLite) · Pandas · Streamlit · Plotly · Faker · Power BI (DAX, Power Query) · Docker · pytest
+
+## 📄 License
+
+[MIT](LICENSE)

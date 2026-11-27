@@ -1,0 +1,56 @@
+table dq_checks
+	lineageTag: 4a3707cb-f358-5311-b8f5-4cb6eaf44073
+
+	column Check
+		dataType: string
+		lineageTag: f91092ad-8dc8-5ac7-8a01-ecba2a54bc97
+		summarizeBy: none
+		sourceColumn: Check
+
+	column Rule
+		dataType: string
+		lineageTag: 0b2e6af9-0883-5c2d-b540-c745db1d3e30
+		summarizeBy: none
+		sourceColumn: Rule
+
+	column Violations
+		dataType: int64
+		formatString: #,0
+		lineageTag: cd63f179-c178-5116-aa7e-18049203135f
+		summarizeBy: none
+		sourceColumn: Violations
+
+	column Status
+		dataType: string
+		lineageTag: 65d92787-232d-508b-808c-874bcae1eabf
+		summarizeBy: none
+		sourceColumn: Status
+
+	partition dq_checks = m
+		mode: import
+		source =
+				let
+					// Mirrors the assertions in src/etl_pipeline.py, plus key-integrity checks.
+					// Violations are reported instead of stopping the refresh, so the report can show them.
+					Checks = #table(
+						type table [Check = text, Rule = text, Violations = Int64.Type],
+						{
+							{"Units sold is positive", "UnitsSold > 0",
+								Table.RowCount(Table.SelectRows(fact_sales, each [UnitsSold] <= 0))},
+							{"Net revenue is not negative", "NetRevenue >= 0",
+								Table.RowCount(Table.SelectRows(fact_sales, each [NetRevenue] < 0))},
+							{"Transaction ID is unique", "No duplicate TransactionID",
+								Table.RowCount(fact_sales) - List.Count(List.Distinct(fact_sales[TransactionID]))},
+							{"Date keys resolve", "fact.date_id exists in dim_date",
+								List.Count(List.Difference(List.Distinct(fact_sales[date_id]), dim_date[date_id]))},
+							{"Product keys resolve", "fact.product_id exists in dim_product",
+								List.Count(List.Difference(List.Distinct(fact_sales[product_id]), dim_product[product_id]))},
+							{"Channel keys resolve", "fact.channel_id exists in dim_channel",
+								List.Count(List.Difference(List.Distinct(fact_sales[channel_id]), dim_channel[channel_id]))}
+						}
+					),
+					WithStatus = Table.AddColumn(
+						Checks, "Status", each if [Violations] = 0 then "PASS" else "FAIL", type text
+					)
+				in
+					WithStatus

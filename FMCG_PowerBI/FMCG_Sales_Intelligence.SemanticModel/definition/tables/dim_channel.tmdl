@@ -1,0 +1,27 @@
+table dim_channel
+	lineageTag: 22a0b521-4f0b-576f-881c-bdd644372a36
+
+	column Channel
+		dataType: string
+		lineageTag: d91b2b28-d847-5653-969f-831861e5af0d
+		summarizeBy: none
+		sourceColumn: Channel
+
+	column channel_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ec515219-8c40-5abf-b1b6-a622d59788df
+		summarizeBy: none
+		sourceColumn: channel_id
+
+	partition dim_channel = m
+		mode: import
+		source =
+				let
+					Source = GetCsv("dim_channel.csv"),
+					Typed = Table.TransformColumnTypes(
+						Source, {{"Channel", type text}, {"channel_id", Int64.Type}}, "en-US"
+					)
+				in
+					Typed

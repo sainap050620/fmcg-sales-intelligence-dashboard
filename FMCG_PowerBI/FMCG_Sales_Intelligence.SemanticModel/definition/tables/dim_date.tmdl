@@ -1,0 +1,76 @@
+table dim_date
+	dataCategory: Time
+	lineageTag: ad2279c9-4b56-5c9a-b5b8-a06d6a666ec9
+
+	column full_date
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: 86596a4c-85e4-5deb-be08-3104df888580
+		summarizeBy: none
+		sourceColumn: full_date
+
+	column date_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 937c870e-7540-5710-910e-bbb03cc22fc4
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: 2fa9045f-167f-5a63-9e3d-fc284d8a278d
+		summarizeBy: none
+		sourceColumn: year
+
+	column month
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9c280642-0d64-5c13-b855-ae762f0ab307
+		summarizeBy: none
+		sourceColumn: month
+
+	column year_month
+		dataType: string
+		lineageTag: 43e6ac85-a0af-5894-ae72-64afa9d76708
+		summarizeBy: none
+		sourceColumn: year_month
+
+	column day_of_week
+		dataType: string
+		lineageTag: a4249f50-99a5-541e-ba14-52dd08e65d6f
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: e63eeee6-d071-5d7b-a94d-3167e362f105
+		summarizeBy: none
+		sourceColumn: Month Name
+		sortByColumn: month
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+					Source = GetCsv("dim_date.csv"),
+					Typed = Table.TransformColumnTypes(
+						Source,
+						{
+							{"full_date", type date},
+							{"date_id", Int64.Type},
+							{"year", Int64.Type},
+							{"month", Int64.Type},
+							{"year_month", type text},
+							{"day_of_week", type text}
+						},
+						"en-US"
+					),
+					AddMonthName = Table.AddColumn(
+						Typed, "Month Name", each Date.ToText([full_date], "MMM", "en-US"), type text
+					)
+				in
+					AddMonthName

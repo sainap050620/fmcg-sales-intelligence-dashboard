@@ -1,6 +1,14 @@
 import os
 import pandas as pd
 
+def check_data_quality(df: pd.DataFrame) -> None:
+    """Raise ValueError if the raw transactions break a business rule."""
+    if not (df["UnitsSold"] > 0).all():
+        raise ValueError("Data Quality Error: Non-positive units sold detected!")
+    if not (df["NetRevenue"] >= 0).all():
+        raise ValueError("Data Quality Error: Negative revenue detected!")
+
+
 def run_pipeline():
     raw_path = "data/raw_fmcg_data.csv"
     if not os.path.exists(raw_path):
@@ -10,8 +18,7 @@ def run_pipeline():
     df = pd.read_csv(raw_path)
 
     # 1. Automated Data Quality Checks
-    assert (df["UnitsSold"] > 0).all(), "Data Quality Error: Non-positive units sold detected!"
-    assert (df["NetRevenue"] >= 0).all(), "Data Quality Error: Negative revenue detected!"
+    check_data_quality(df)
 
     # 2. Date parsing & feature engineering
     df["Date"] = pd.to_datetime(df["Date"])

@@ -1,0 +1,42 @@
+// 1 Core KPIs
+Net Revenue = SUM(fact_sales[NetRevenue])
+
+// 1 Core KPIs
+Gross Margin = SUM(fact_sales[GrossMargin])
+
+// 1 Core KPIs
+Gross Margin % = DIVIDE([Gross Margin], [Net Revenue])
+
+// 1 Core KPIs
+Units Sold = SUM(fact_sales[UnitsSold])
+
+// 1 Core KPIs
+Orders = COUNTROWS(fact_sales)
+
+// 1 Core KPIs
+Avg Units per Order = DIVIDE([Units Sold], [Orders])
+
+// 2 Promotion
+Avg Units (Promo) = CALCULATE(AVERAGE(fact_sales[UnitsSold]), fact_sales[IsPromo] = 1)
+
+// 2 Promotion
+Avg Units (Base) = CALCULATE(AVERAGE(fact_sales[UnitsSold]), fact_sales[IsPromo] = 0)
+
+// 2 Promotion
+Promo Lift % = DIVIDE([Avg Units (Promo)] - [Avg Units (Base)], [Avg Units (Base)])
+
+// 3 Time intelligence
+Net Revenue PM = CALCULATE([Net Revenue], DATEADD(dim_date[full_date], -1, MONTH))
+
+// 3 Time intelligence
+Revenue MoM % = DIVIDE([Net Revenue] - [Net Revenue PM], [Net Revenue PM])
+
+// 3 Time intelligence
+Net Revenue YTD = TOTALYTD([Net Revenue], dim_date[full_date])
+
+// 4 Mix and ranking
+Revenue % of Total = DIVIDE([Net Revenue], CALCULATE([Net Revenue], ALLSELECTED(dim_product[Category])))
+
+// 4 Mix and ranking
+Category Revenue Rank = RANKX(ALLSELECTED(dim_product[Category]), [Net Revenue], , DESC, Dense)
+

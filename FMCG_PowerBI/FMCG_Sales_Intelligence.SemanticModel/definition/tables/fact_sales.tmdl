@@ -1,0 +1,169 @@
+table fact_sales
+	lineageTag: 93858df9-4017-50e6-9b47-5506f8e0f868
+
+	measure 'Net Revenue' = SUM(fact_sales[NetRevenue])
+		formatString: €#,0.00
+		displayFolder: 1 Core KPIs
+		lineageTag: 5b3d3af9-1701-5879-9090-00054264cbbd
+
+	measure 'Gross Margin' = SUM(fact_sales[GrossMargin])
+		formatString: €#,0.00
+		displayFolder: 1 Core KPIs
+		lineageTag: 9db8478a-4d3a-5a8e-9d0a-7f662680722f
+
+	measure 'Gross Margin %' = DIVIDE([Gross Margin], [Net Revenue])
+		formatString: 0.0%
+		displayFolder: 1 Core KPIs
+		lineageTag: 5eb7e1bd-6474-52eb-950f-f5c2bea8b9c5
+
+	measure 'Units Sold' = SUM(fact_sales[UnitsSold])
+		formatString: #,0
+		displayFolder: 1 Core KPIs
+		lineageTag: 6f90ad8e-5aec-596f-b83f-1a038d2fa983
+
+	measure Orders = COUNTROWS(fact_sales)
+		formatString: #,0
+		displayFolder: 1 Core KPIs
+		lineageTag: c3c150a7-9595-53d6-868f-e4445d593ad6
+
+	measure 'Avg Units per Order' = DIVIDE([Units Sold], [Orders])
+		formatString: 0.00
+		displayFolder: 1 Core KPIs
+		lineageTag: 4742d4f9-060e-57ac-ac11-b4edc2233761
+
+	measure 'Avg Units (Promo)' = CALCULATE(AVERAGE(fact_sales[UnitsSold]), fact_sales[IsPromo] = 1)
+		formatString: 0.00
+		displayFolder: 2 Promotion
+		lineageTag: c913d00d-7712-51e5-8414-96cdbccdcf68
+
+	measure 'Avg Units (Base)' = CALCULATE(AVERAGE(fact_sales[UnitsSold]), fact_sales[IsPromo] = 0)
+		formatString: 0.00
+		displayFolder: 2 Promotion
+		lineageTag: facce8e4-1412-54af-bd12-a63f3fb82c9c
+
+	measure 'Promo Lift %' = DIVIDE([Avg Units (Promo)] - [Avg Units (Base)], [Avg Units (Base)])
+		formatString: 0.00%
+		displayFolder: 2 Promotion
+		lineageTag: 84105169-5683-579c-a787-019d4ea862dd
+
+	measure 'Net Revenue PM' = CALCULATE([Net Revenue], DATEADD(dim_date[full_date], -1, MONTH))
+		formatString: €#,0.00
+		displayFolder: 3 Time intelligence
+		lineageTag: f5390e35-9cdd-56bf-9b94-434a62668c66
+
+	measure 'Revenue MoM %' = DIVIDE([Net Revenue] - [Net Revenue PM], [Net Revenue PM])
+		formatString: 0.00%
+		displayFolder: 3 Time intelligence
+		lineageTag: 8798e3a0-f223-5300-85b1-4280921f6e23
+
+	measure 'Net Revenue YTD' = TOTALYTD([Net Revenue], dim_date[full_date])
+		formatString: €#,0.00
+		displayFolder: 3 Time intelligence
+		lineageTag: dd6aea5a-874b-55ca-8da3-013a2500513d
+
+	measure 'Revenue % of Total' = DIVIDE([Net Revenue], CALCULATE([Net Revenue], ALLSELECTED(dim_product[Category])))
+		formatString: 0.00%
+		displayFolder: 4 Mix and ranking
+		lineageTag: 22130f3e-4bac-572e-910f-0fca1187ca2c
+
+	measure 'Category Revenue Rank' = RANKX(ALLSELECTED(dim_product[Category]), [Net Revenue], , DESC, Dense)
+		formatString: 0
+		displayFolder: 4 Mix and ranking
+		lineageTag: 24da69d2-95a2-57e0-8bf6-84ae1bfe890a
+
+	column TransactionID
+		dataType: string
+		lineageTag: d161b55c-efaa-50ed-a1a7-edde36321c72
+		summarizeBy: none
+		sourceColumn: TransactionID
+
+	column date_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cae748c4-633d-56f0-8be0-a49d565f7890
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column product_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ef81a7b2-2f5f-556a-998d-4fad9a433186
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column channel_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bd344095-7777-5e67-b8f3-a32b6a648c78
+		summarizeBy: none
+		sourceColumn: channel_id
+
+	column UnitsSold
+		dataType: int64
+		formatString: #,0
+		lineageTag: 0838cddc-f439-5d13-a7ff-3b81fefbb94a
+		summarizeBy: sum
+		sourceColumn: UnitsSold
+
+	column NetRevenue
+		dataType: double
+		formatString: €#,0.00
+		lineageTag: 88226703-b848-524e-925a-2ff9523f96bc
+		summarizeBy: sum
+		sourceColumn: NetRevenue
+
+	column GrossMargin
+		dataType: double
+		formatString: €#,0.00
+		lineageTag: 0257256a-948d-5926-854f-cb1fe9682b8a
+		summarizeBy: sum
+		sourceColumn: GrossMargin
+
+	column MarginPct
+		dataType: double
+		formatString: 0.00
+		lineageTag: 62f5af81-4641-525d-8fc3-2a5ee2d3b3b7
+		summarizeBy: none
+		sourceColumn: MarginPct
+
+	column IsPromo
+		dataType: int64
+		formatString: 0
+		lineageTag: e9e9e7a7-69f2-50bd-9d05-aa81575edf6a
+		summarizeBy: none
+		sourceColumn: IsPromo
+
+	column 'Promo Label'
+		dataType: string
+		lineageTag: 0cf7b297-a2c0-591d-8ff6-60fc931e7434
+		summarizeBy: none
+		sourceColumn: Promo Label
+
+	partition fact_sales = m
+		mode: import
+		source =
+				let
+					Source = GetCsv("fact_sales.csv"),
+					Typed = Table.TransformColumnTypes(
+						Source,
+						{
+							{"TransactionID", type text},
+							{"date_id", Int64.Type},
+							{"product_id", Int64.Type},
+							{"channel_id", Int64.Type},
+							{"UnitsSold", Int64.Type},
+							{"NetRevenue", type number},
+							{"GrossMargin", type number},
+							{"MarginPct", type number},
+							{"IsPromo", Int64.Type}
+						},
+						"en-US"
+					),
+					AddPromoLabel = Table.AddColumn(
+						Typed, "Promo Label", each if [IsPromo] = 1 then "Promo" else "Base", type text
+					)
+				in
+					AddPromoLabel

@@ -1,0 +1,25 @@
+expression DataBaseUrl = "https://raw.githubusercontent.com/sainap050620/fmcg-sales-intelligence-dashboard/main/data/processed" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: bb845e04-e488-5118-84e3-6e127ab373b5
+	queryGroup: Parameters
+
+expression GetCsv =
+		(fileName as text) as table =>
+		let
+			// DataBaseUrl is a parameter: an https:// folder URL (default: the GitHub repo)
+			// or a local folder path such as C:\Data\fmcg\processed
+			Source =
+				if Text.StartsWith(DataBaseUrl, "http") then
+					Csv.Document(
+						Web.Contents(DataBaseUrl, [RelativePath = fileName]),
+						[Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+					)
+				else
+					Csv.Document(
+						File.Contents(DataBaseUrl & "\" & fileName),
+						[Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+					),
+			Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true])
+		in
+			Promoted
+	lineageTag: 5a4f330c-264e-54ce-8cb1-977de5bb4770
+	queryGroup: Functions
