@@ -1,0 +1,27 @@
+table dim_product
+	lineageTag: 2c2e991e-c1f1-564e-8799-0e98231fd6d6
+
+	column Category
+		dataType: string
+		lineageTag: 7509b8e8-ae7f-59de-be1e-29ec0bf8446a
+		summarizeBy: none
+		sourceColumn: Category
+
+	column product_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 83440666-72f3-5019-9407-ca01b19e2f7a
+		summarizeBy: none
+		sourceColumn: product_id
+
+	partition dim_product = m
+		mode: import
+		source =
+				let
+					Source = GetCsv("dim_product.csv"),
+					Typed = Table.TransformColumnTypes(
+						Source, {{"Category", type text}, {"product_id", Int64.Type}}, "en-US"
+					)
+				in
+					Typed
