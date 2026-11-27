@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "dim_channel.Channel",
-              "nativeQueryRef": "Channel",
-              "active": true
+              "nativeQueryRef": "Channel"
             },
             {
               "field": {
