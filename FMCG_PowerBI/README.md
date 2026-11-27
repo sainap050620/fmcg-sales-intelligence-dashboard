@@ -12,13 +12,14 @@ A Power BI rebuild of the Streamlit dashboard in this repo. It uses the same sta
 
 ## Open it
 
-1. Power BI Desktop, then File, Options and settings, Options, Preview features. Turn on
-   **Power BI Project (.pbip) save option**, **Store semantic model using TMDL format** and
-   **Store reports using enhanced metadata format (PBIR)**, then restart Desktop.
-   (Newer versions may already have these on.)
+1. Use a current version of Power BI Desktop (tested with 2.160, November 2026, with no preview
+   settings changed). An older version may need the Power BI Project (.pbip), TMDL and PBIR preview
+   features switched on under File, Options and settings, Options, Preview features.
 2. Open `FMCG_Sales_Intelligence.pbip`.
 3. A PBIP stores no data, so click **Refresh**. When asked how to connect to
    `raw.githubusercontent.com`, choose **Anonymous**.
+   If Power BI then asks for **privacy levels**, choose **Public** (the data is public and synthetic)
+   and click **Save**.
 4. To load local files instead: Home, Transform data, Manage parameters, set `DataBaseUrl`
    to the full path of `data\processed` in your clone (for example
    `C:\Users\you\fmcg-sales-intelligence-dashboard\data\processed`).
@@ -77,14 +78,31 @@ gross margin % **40.49%**, units **82,485**, orders **10,000**.
 
 Data Quality page: all six checks should show PASS with 0 violations.
 
-## Verification status
+## Verification
 
-- The semantic model loads in Microsoft's TMDL parser (`Microsoft.AnalysisServices`) with no validation errors.
-- The report JSON files that declare a `$schema` validate against Microsoft's published schemas.
-- `tests/test_powerbi.py` checks that visuals only use fields that exist in the model, that the fallback
-  files match the model, and that the headline figures below match the data.
-- The project has **not yet been opened and refreshed in Power BI Desktop**, so the Power Query and DAX
-  code has not been executed. Use the figures below to confirm it on first refresh.
+Tested in Power BI Desktop 2.160 on Windows: the project opens, refreshes from GitHub, all 14
+measures evaluate without errors, every data-quality check passes, and the figures queried from the loaded
+model match an independent calculation in pandas. The screenshots below come from that run.
+
+`tests/test_powerbi.py` checks the files' consistency on every CI run; it does not start Power BI.
+
+## Screenshots
+
+**Executive Overview**
+
+![Executive Overview page in Power BI Desktop](../docs/powerbi/1-executive-overview.png)
+
+**Channel Performance**
+
+![Channel Performance page in Power BI Desktop](../docs/powerbi/2-channel-performance.png)
+
+**Promotion and Growth**
+
+![Promotion and Growth page in Power BI Desktop](../docs/powerbi/3-promotion-and-growth.png)
+
+**Data Quality**
+
+![Data Quality page in Power BI Desktop](../docs/powerbi/4-data-quality.png)
 
 ## Notes
 
