@@ -56,6 +56,10 @@ filtered_df = df[
     (df["Category"].isin(selected_category))
 ]
 
+if filtered_df.empty:
+    st.warning("No sales match these filters. Select at least one channel and one category.")
+    st.stop()
+
 # Top-Level KPI Cards
 col1, col2, col3, col4 = st.columns(4)
 total_revenue = filtered_df["NetRevenue"].sum()
@@ -84,7 +88,7 @@ with row1_col1:
         labels={"year_month": "Month", "NetRevenue": "Revenue (€)"},
         title="Revenue by Billing Period"
     )
-    st.plotly_chart(fig_monthly, use_container_width=True)
+    st.plotly_chart(fig_monthly, width="stretch")
 
 with row1_col2:
     st.subheader("Revenue by Product Category")
@@ -97,14 +101,14 @@ with row1_col2:
         labels={"NetRevenue": "Revenue (€)"},
         title="Category Contribution"
     )
-    st.plotly_chart(fig_cat, use_container_width=True)
+    st.plotly_chart(fig_cat, width="stretch")
 
 # Visualizations Row 2: Promotional Lift Analysis
 st.subheader("Promotional Uplift Analysis")
 promo_summary = filtered_df.groupby(["Category", "IsPromo"])["UnitsSold"].mean().unstack().reset_index()
-promo_summary.rename(columns={0: "Base Units", 1: "Promo Units"}, inplace=True)
+promo_summary = promo_summary.rename(columns={0: "Base Units", 1: "Promo Units"})
 if "Base Units" in promo_summary and "Promo Units" in promo_summary:
     promo_summary["Promo Lift %"] = (
         (promo_summary["Promo Units"] - promo_summary["Base Units"]) / promo_summary["Base Units"] * 100
     ).round(2)
-    st.dataframe(promo_summary, use_container_width=True)
+    st.dataframe(promo_summary, width="stretch")

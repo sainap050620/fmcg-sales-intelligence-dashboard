@@ -19,8 +19,9 @@ A Power BI rebuild of the Streamlit dashboard in this repo. It uses the same sta
 2. Open `FMCG_Sales_Intelligence.pbip`.
 3. A PBIP stores no data, so click **Refresh**. When asked how to connect to
    `raw.githubusercontent.com`, choose **Anonymous**.
-4. To use the bundled files instead: Home, Transform data, Manage parameters, set `DataBaseUrl`
-   to the full path of the `data` folder (for example `C:\Users\you\FMCG_PowerBI\data`).
+4. To load local files instead: Home, Transform data, Manage parameters, set `DataBaseUrl`
+   to the full path of `data\processed` in your clone (for example
+   `C:\Users\you\fmcg-sales-intelligence-dashboard\data\processed`).
 5. Save as `.pbix` (File, Save as) if you want a single file to share or publish.
 
 If the project will not open, use `fallback/`: create a blank report, paste each query from
@@ -75,6 +76,15 @@ gross margin % **40.49%**, units **82,485**, orders **10,000**.
 | Beverages | 34,054.95 | 26.28% | 3 |
 
 Data Quality page: all six checks should show PASS with 0 violations.
+
+## Verification status
+
+- The semantic model loads in Microsoft's TMDL parser (`Microsoft.AnalysisServices`) with no validation errors.
+- The report JSON files that declare a `$schema` validate against Microsoft's published schemas.
+- `tests/test_powerbi.py` checks that visuals only use fields that exist in the model, that the fallback
+  files match the model, and that the headline figures below match the data.
+- The project has **not yet been opened and refreshed in Power BI Desktop**, so the Power Query and DAX
+  code has not been executed. Use the figures below to confirm it on first refresh.
 
 ## Notes
 
